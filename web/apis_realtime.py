@@ -1,5 +1,6 @@
 
 import requests
+import os
 import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, Optional, Tuple
@@ -408,12 +409,10 @@ class SenamhiAPI:
     def _get_openweather_temp(cls, lat: float, lon: float) -> Optional[float]:
        
         try:
-            # API KEY gratuita (registrarse en https://openweathermap.org/api)
-            # IMPORTANTE: En producción, usar variable de entorno
-            API_KEY = "6ac714fe156c0daea379f0e878b5c911"  # Reemplazar con tu key
-            
-            if API_KEY == "6ac714fe156c0daea379f0e878b5c911":
-                logger.warning("⚠️ OpenWeather API KEY no configurada")
+            API_KEY = os.getenv("OPENWEATHER_API_KEY") 
+
+            if not API_KEY:
+                logger.warning("⚠️ OpenWeather API KEY no configurada en variables de entorno")
                 return None
             
             url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
