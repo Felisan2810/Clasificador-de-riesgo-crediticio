@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Híbrido de Riesgo Crediticio</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">🧠 Sistema de Riesgo Crediticio</h1>
+                <div class="header-status">
+                    <span id="model-status" class="status-badge">Cargando...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="predictor">
+                📊 Evaluación
+            </button>
+            <button class="tab-btn" data-tab="comparacion">
+                🔬 Comparación
+            </button>
+            <button class="tab-btn" data-tab="analytics">
+                📈 Estadísticas
+            </button>
+            <button class="tab-btn" data-tab="modelo">
+                ⚙️ Modelo
+            </button>
+        </div>
+
+        <!-- Tab: Predictor -->
+        <div id="predictor" class="tab-content active">
+            <div class="card">
+                <h2 class="card-title">Nueva Evaluación de Riesgo</h2>
+                
+                <div class="form-actions">
+                    <button id="load-example" class="btn btn-secondary">
+                        Cargar Ejemplo
+                    </button>
+                    <button id="clear-form" class="btn btn-secondary">
+                        Limpiar
+                    </button>
+                </div>
+
+                <form id="prediction-form" class="form">
+                    <!-- Información del Crédito -->
+                    <div class="form-section">
+                        <h3 class="section-title">💰 Información del Crédito</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Monto Solicitado (S/.)</label>
+                                <input type="number" name="monto" required min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Plazo (meses)</label>
+                                <input type="number" name="PlazoReal" required min="1" max="360">
+                            </div>
+                            <div class="form-group">
+                                <label>Tasa Efectiva Anual (%)</label>
+                                <input type="number" name="TasaEfectiva" required min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del Cliente -->
+                    <div class="form-section">
+                        <h3 class="section-title">👤 Información del Cliente</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Edad</label>
+                                <input type="number" name="EdadDesembolsoNormalizada" required min="18" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Ingreso Mensual (S/.)</label>
+                                <input type="number" name="SalarioNormalizado" required min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Dependientes</label>
+                                <input type="number" name="Dependientes" required min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Nivel de Instrucción</label>
+                                <select name="NivelInstruccion" required>
+                                    <option value="1">Sin Instrucción</option>
+                                    <option value="2">Primaria Completa</option>
+                                    <option value="3">Secundaria Incompleta</option>
+                                    <option value="4" selected>Secundaria Completa</option>
+                                    <option value="5">Superior Técnica Incompleta</option>
+                                    <option value="6">Superior Técnica Completa</option>
+                                    <option value="7">Universitaria Incompleta</option>
+                                    <option value="8">Universitaria Completa</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Estado Civil</label>
+                                <select name="EstadoCivil" required>
+                                    <option value="SOLTERO">Soltero</option>
+                                    <option value="CASADO">Casado</option>
+                                    <option value="DIVORCIADO">Divorciado</option>
+                                    <option value="VIUDO">Viudo</option>
+                                    <option value="CONVIVIENTE">Conviviente</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sexo</label>
+                                <select name="Sexo" required>
+                                    <option value="1">Masculino</option>
+                                    <option value="2">Femenino</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Historial Financiero -->
+                    <div class="form-section">
+                        <h3 class="section-title">📋 Historial Financiero</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Antigüedad Bancaria (meses)</label>
+                                <input type="number" name="iAntiguedadBancarizado" required min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Deuda Máxima Anterior (S/.)</label>
+                                <input type="number" name="MaxMontoInterno" required min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Score Crediticio (0-1000)</label>
+                                <input type="number" name="ScoreOriginacionMicro" required min="0" max="1000">
+                            </div>
+                            <div class="form-group">
+                                <label>Score Sobreendeudamiento (0-1000)</label>
+                                <input type="number" name="Score_Sobreendeudamiento" required min="0" max="1000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Balance Financiero -->
+                    <div class="form-section">
+                        <h3 class="section-title">💼 Balance Financiero</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Total Activos (S/.)</label>
+                                <input type="number" name="Bal_TotalActivosNormalizado" required min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Ingresos del Negocio (S/.)</label>
+                                <input type="number" name="NetoIngresosNegocioNormalizado" required min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Liquidez Disponible (S/.)</label>
+                                <input type="number" name="LiquidezDisponibleNormalizado" required min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información Adicional -->
+                    <div class="form-section">
+                        <h3 class="section-title">ℹ️ Información Adicional</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Segmento de Cartera</label>
+                                <select name="SegmentoCartera" required>
+                                    <option value="1">Segmento 1 - Premium</option>
+                                    <option value="2">Segmento 2 - Alto</option>
+                                    <option value="3">Segmento 3 - Medio</option>
+                                    <option value="4">Segmento 4 - Básico</option>
+                                    <option value="5">Segmento 5 - Inicial</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Apoyo Gubernamental</label>
+                                <select name="apoyogobierno" required>
+                                    <option value="0">No</option>
+                                    <option value="1">Sí</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Intensidad COVID (0-1)</label>
+                                <input type="number" name="covid_intensity" value="0.3" min="0" max="1" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Anomalía Temperatura</label>
+                                <input type="number" name="temperatura_anomalia" value="0" min="-3" max="3" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-large">
+                        🚀 Evaluar Riesgo
+                    </button>
+                </form>
+            </div>
+
+            <!-- Resultados -->
+            <div id="results" class="card" style="display: none;">
+                <h2 class="card-title">Resultado de Evaluación</h2>
+                
+                <div id="result-content"></div>
+                
+                <div class="result-actions">
+                    <button id="download-report" class="btn btn-secondary">
+                        📄 Descargar Reporte
+                    </button>
+                    <button id="register-feedback" class="btn btn-secondary">
+                        📝 Registrar Feedback
+                    </button>
+                    <button id="new-evaluation" class="btn btn-primary">
+                        🔄 Nueva Evaluación
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Comparación -->
+        <div id="comparacion" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">🔬 Comparación: Con vs Sin Lógica Difusa</h2>
+                <p class="card-description">
+                    Compare los resultados de predicción utilizando el sistema híbrido completo vs solo Machine Learning
+                </p>
+
+                <button id="compare-btn" class="btn btn-primary btn-large">
+                    Ejecutar Comparación
+                </button>
+
+                <div id="comparison-results" style="display: none;">
+                    <div class="comparison-grid">
+                        <div class="comparison-card">
+                            <h3>🧠 Sistema Híbrido (Difuso + ML)</h3>
+                            <div id="hybrid-result"></div>
+                        </div>
+                        <div class="comparison-card">
+                            <h3>🤖 Solo Machine Learning</h3>
+                            <div id="ml-only-result"></div>
+                        </div>
+                        <div class="comparison-card">
+                            <h3>🎯 Solo Lógica Difusa</h3>
+                            <div id="fuzzy-only-result"></div>
+                        </div>
+                    </div>
+
+                    <div id="comparison-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Analytics -->
+        <div id="analytics" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">📈 Estadísticas y Feedback</h2>
+                
+                <button id="refresh-stats" class="btn btn-secondary">
+                    🔄 Actualizar Estadísticas
+                </button>
+
+                <div id="stats-content">
+                    <p class="loading-text">Cargando estadísticas...</p>
+                </div>
+
+                <div id="stats-charts"></div>
+            </div>
+        </div>
+
+        <!-- Tab: Modelo -->
+        <div id="modelo" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">⚙️ Gestión del Modelo</h2>
+                
+                <div class="model-info">
+                    <h3>Estado Actual</h3>
+                    <div id="model-info-content">
+                        <p class="loading-text">Cargando información del modelo...</p>
+                    </div>
+                </div>
+
+                <div class="model-actions">
+                    <div class="action-card">
+                        <h3>🎓 Entrenar Modelo</h3>
+                        <p>Entrenar un nuevo modelo con los datos disponibles</p>
+                        <button id="train-model" class="btn btn-primary">
+                            Entrenar
+                        </button>
+                    </div>
+
+                    <div class="action-card">
+                        <h3>🗑️ Eliminar Modelo</h3>
+                        <p>Eliminar el modelo actual (requiere reentrenamiento)</p>
+                        <button id="delete-model" class="btn btn-danger">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loading-text">Procesando...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
