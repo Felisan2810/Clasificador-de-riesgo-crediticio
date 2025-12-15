@@ -31,13 +31,15 @@
             <button class="tab-btn" data-tab="comparacion">
                 🔬 Comparación
             </button>
+            <button class="tab-btn" data-tab="mapas">
+                🗺️ Mapas en Tiempo Real
+            </button>
             <button class="tab-btn" data-tab="analytics">
                 📈 Estadísticas
             </button>
             <button class="tab-btn" data-tab="modelo">
                 ⚙️ Modelo
             </button>
-            <a href="/static/maps.html" class="tab-btn" style="text-decoration: none;">🗺️ Mapas</a>
         </div>
 
         <!-- Tab: Predictor -->
@@ -256,6 +258,119 @@
             </div>
         </div>
 
+        <!-- Tab: Mapas en Tiempo Real -->
+        <div id="mapas" class="tab-content">
+            <!-- Mapa de COVID -->
+            <div class="card">
+                <h2 class="card-title">📊 Intensidad COVID-19 por Departamento</h2>
+                <p class="card-description">
+                    Datos en tiempo real de casos confirmados por departamento del Perú
+                </p>
+                
+                <div class="form-actions">
+                    <button id="refresh-covid" class="btn btn-primary">
+                        🔄 Actualizar Datos COVID
+                    </button>
+                    <button id="toggle-covid-view" class="btn btn-secondary">
+                        📊 Cambiar Vista
+                    </button>
+                </div>
+                
+                <div id="covid-map" style="min-height: 400px;"></div>
+                
+                <div class="legend">
+                    <strong>Intensidad:</strong>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #10b981;"></div>
+                        <span>Baja (0-30%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f59e0b;"></div>
+                        <span>Media (30-60%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ef4444;"></div>
+                        <span>Alta (60-100%)</span>
+                    </div>
+                </div>
+                
+                <div id="covid-stats" class="map-info"></div>
+            </div>
+
+            <!-- Mapa de Temperatura -->
+            <div class="card">
+                <h2 class="card-title">🌡️ Anomalías de Temperatura por Departamento</h2>
+                <p class="card-description">
+                    Diferencia respecto al promedio histórico (°C)
+                </p>
+                
+                <div class="form-actions">
+                    <button id="refresh-temp" class="btn btn-primary">
+                        🔄 Actualizar Temperaturas
+                    </button>
+                    <button id="toggle-temp-view" class="btn btn-secondary">
+                        🌡️ Cambiar Vista
+                    </button>
+                </div>
+                
+                <div id="temp-map" style="min-height: 400px;"></div>
+                
+                <div class="legend">
+                    <strong>Anomalía:</strong>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3b82f6;"></div>
+                        <span>Más Frío (-2 a 0°C)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #10b981;"></div>
+                        <span>Normal (0 a +1°C)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ef4444;"></div>
+                        <span>Más Cálido (+1 a +3°C)</span>
+                    </div>
+                </div>
+                
+                <div id="temp-stats" class="map-info"></div>
+            </div>
+
+            <!-- Tabla de Datos Combinados -->
+            <div class="card">
+                <h2 class="card-title">📋 Datos Detallados por Departamento</h2>
+                
+                <div class="form-actions">
+                    <button id="export-csv" class="btn btn-secondary">
+                        📥 Descargar CSV
+                    </button>
+                    <button id="refresh-table" class="btn btn-primary">
+                        🔄 Actualizar Tabla
+                    </button>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table id="data-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f8fafc; text-align: left;">
+                                <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0;">Departamento</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0;">COVID (%)</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0;">Casos Totales</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0;">Temp. Anomalía (°C)</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0;">Temp. Actual (°C)</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0;">Impacto Riesgo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">
+                                    Cargando datos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- Tab: Analytics -->
         <div id="analytics" class="tab-content">
             <div class="card">
@@ -314,6 +429,14 @@
 
     <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
+
+    <!-- Live Data Widget -->
+    <div id="live-widget" class="live-widget" style="display: none;">
+        <div class="live-indicator">🔴 LIVE</div>
+        <div id="live-content">
+            Cargando datos en vivo...
+        </div>
+    </div>
 
     <script src="/static/app.js"></script>
 </body>

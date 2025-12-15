@@ -292,7 +292,13 @@ async def get_feedback_stats():
     try:
         metricas = state.feedback_module.obtener_metricas_feedback()
         
-        # Convertir confusion matrix a formato JSON
+        # 🚨 CORRECCIÓN DE TIPOS NUMPY: Convertir a int/float
+        if 'total' in metricas: metricas['total'] = int(metricas['total'])
+        if 'correctos' in metricas: metricas['correctos'] = int(metricas['correctos'])
+        if 'incorrectos' in metricas: metricas['incorrectos'] = int(metricas['incorrectos'])
+        if 'accuracy_real' in metricas: metricas['accuracy_real'] = float(metricas['accuracy_real'])
+        
+        # La matriz de confusión puede contener numpy.int64
         if 'confusion_matrix' in metricas:
             metricas['confusion_matrix'] = metricas['confusion_matrix'].to_dict()
         
@@ -303,12 +309,15 @@ async def get_feedback_stats():
         
     except Exception as e:
         logger.error(f"Error al obtener estadísticas: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        # Retornar una respuesta JSON válida para evitar el fallo si el módulo de feedback es el problema
+        return JSONResponse(status_code=500, content={"success": False, "detail": str(e)})
+
 
 @app.get("/api/model/info")
 async def get_model_info():
     """Obtener información del modelo"""
     if not state.modelo_entrenado:
+        # Esto asegura que el frontend sepa que el modelo aún no se ha cargado/entrenado
         return {
             "entrenado": False,
             "mensaje": "Modelo no entrenado"
@@ -322,14 +331,18 @@ async def get_model_info():
         return {
             "entrenado": True,
             "metricas": model_data.get('training_metrics', {}),
-            "features": len(model_data.get('feature_importance', [])),
+        
+            "features": int(len(model_data.get('feature_importance', []))), 
+            
             "fecha_entrenamiento": str(MODEL_FILE.stat().st_mtime)
         }
         
     except Exception as e:
+        logger.error(f"Error al cargar/leer el modelo: {e}")
         return {
-            "entrenado": True,
-            "error": str(e)
+            # Cambiamos 'entrenado': True a False para que el frontend lo maneje como error
+            "entrenado": False, 
+            "error": "Error al cargar información del modelo: " + str(e)
         }
 
 @app.post("/api/train/start")
