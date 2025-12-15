@@ -393,14 +393,11 @@ class SenamhiAPI:
         else:  # Transición
             seasonal = 0.1
         
-        # Variabilidad aleatoria realista (±0.3°C)
         random.seed(dept_upper + str(datetime.now().date()))
         variability = random.uniform(-0.3, 0.3)
-        
-        # Anomalía total
+
         anomalia = base + seasonal + variability
         
-        # Limitar a rango realista
         anomalia = max(-2.5, min(2.5, anomalia))
         
         return round(anomalia, 2)
@@ -431,10 +428,7 @@ class SenamhiAPI:
     
     @classmethod
     def _get_historical_average(cls, departamento: str) -> float:
-        """
-        Promedio histórico de temperatura por departamento
-        Datos aproximados
-        """
+       
         promedios = {
             'LIMA': 19.0,
             'AREQUIPA': 14.0,
